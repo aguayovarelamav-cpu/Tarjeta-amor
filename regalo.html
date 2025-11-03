@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Amor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 50%, #a18cd1 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 80vh;
+            perspective: 1000px;
+            z-index: 10;
+        }
+        
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .card-front {
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            color: white;
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+            transform: rotateY(180deg);
+            color: #333;
+        }
+        
+        .heart {
+            font-size: 80px;
+            color: white;
+            margin-bottom: 20px;
+            animation: heartbeat 1.5s infinite, float 3s ease-in-out infinite;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .title {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-family: 'Dancing Script', cursive;
+            animation: fadeIn 2s ease-out;
+        }
+        
+        .tap-text {
+            margin-top: 30px;
+            font-size: 16px;
+            opacity: 0.8;
+            animation: pulse 2s infinite, bounce 2s infinite;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .name {
+            font-size: 36px;
+            color: #ff758c;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-family: 'Dancing Script', cursive;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            animation: slideInFromTop 1s ease-out;
+        }
+        
+        .anniversary {
+            font-size: 22px;
+            margin-bottom: 30px;
+            color: #6c5ce7;
+            font-weight: bold;
+            animation: slideInFromLeft 1s ease-out 0.5s both;
+            background: rgba(108, 92, 231, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        
+        .message {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-out 1s both;
+        }
+        
+        .love-note {
+            font-style: italic;
+            margin-top: 20px;
+            color: #ff758c;
+            font-size: 20px;
+            font-family: 'Dancing Script', cursive;
+            animation: fadeIn 2s ease-out 1.5s both;
+        }
+        
+        .hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .floating-heart {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(255, 117, 140, 0.7);
+            animation: floatUp 8s linear infinite;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkle 2s infinite;
+        }
+        
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #ff9a9e;
+            border-radius: 10px;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 1s ease;
+            transform-origin: top;
+        }
+        
+        .envelope.open {
+            transform: rotateX(180deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 200px solid transparent;
+            border-right: 200px solid transparent;
+            border-top: 120px solid #ff7eb3;
+            transform-origin: top;
+            transition: transform 1s ease;
+            z-index: 6;
+        }
+        
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        
+        .envelope-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #ff758c;
+            border-radius: 10px;
+            z-index: 5;
+        }
+        
+        .envelope-heart {
+            font-size: 60px;
+            color: white;
+            z-index: 7;
+            animation: heartbeat 1.5s infinite;
+        }
+        
+        .photo-frame {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #ff758c;
+            margin: 20px auto;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: rotate 20s linear infinite;
+            background: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: #ff758c;
+        }
+        
+        .days-counter {
+            font-size: 18px;
+            margin-top: 15px;
+            color: #6c5ce7;
+            font-weight: bold;
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInFromTop {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideInFromLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .music-note {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.7);
+            animation: floatUp 10s linear infinite;
+        }
+        
+        .btn-replay {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-replay:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope" id="envelope">
+        <div class="envelope-flap"></div>
+        <div class="envelope-body"></div>
+        <div class="envelope-heart">❤️</div>
+    </div>
+    
+    <div class="container">
+        <div class="card" id="card">
+            <div class="card-face card-front">
+                <div class="heart">❤️</div>
+                <div class="title">Para Mi Amor</div>
+                <div class="tap-text">Toca para abrir nuestro regalo especial</div>
+            </div>
+            <div class="card-face card-back">
+                <div class="photo-frame">💑</div>
+                <div class="name" id="partnerName">Nombre de tu Pareja</div>
+                <div class="anniversary" id="anniversaryDate">Nuestro Aniversario: 00/00/0000</div>
+                <div class="days-counter" id="daysTogether"></div>
+                <div class="message">
+                    Cada día a tu lado es un regalo. Eres la persona más especial en mi vida y te amo más de lo que las palabras pueden expresar. Gracias por cada sonrisa, cada momento y por ser mi compañero/a de vida.
+                </div>
+                <div class="love-note">Con todo mi amor, para siempre.</div>
+                <button class="btn-replay" id="replayBtn">Volver a ver</button>
+            </div>
+        </div>
+        <div class="hearts-container" id="heartsContainer"></div>
+    </div>
+
+    <script>
+        // Configuración personalizada - Cambia estos valores
+        const config = {
+            partnerName: "Andrea Emilia",
+            anniversaryDate: "05/12/2023" // Formato: DD/MM/AAAA
+        };
+        
+        // Aplicar la configuración
+        document.getElementById('partnerName').textContent = config.partnerName;
+        document.getElementById('anniversaryDate').textContent = `Nuestro Aniversario: ${config.anniversaryDate}`;
+        
+        // Calcular días juntos
+        function calculateDaysTogether(anniversaryDate) {
+            const parts = anniversaryDate.split('/');
+            const anniversary = new Date(parts[2], parts[1] - 1, parts[0]);
+            const today = new Date();
+            const diffTime = Math.abs(today - anniversary);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+        
+        const daysTogether = calculateDaysTogether(config.anniversaryDate);
+        document.getElementById('daysTogether').textContent = `Llevamos ${daysTogether} días juntos ❤️`;
+        
+        // Animación del sobre
+        const envelope = document.getElementById('envelope');
+        const card = document.getElementById('card');
+        
+        envelope.addEventListener('click', function() {
+            this.classList.add('open');
+            setTimeout(() => {
+                card.style.visibility = 'visible';
+            }, 800);
+        });
+        
+        // Animación de la tarjeta
+        card.addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+        
+        // Botón de repetir
+        document.getElementById('replayBtn').addEventListener('click', function() {
+            card.classList.remove('flipped');
+            setTimeout(() => {
+                envelope.classList.remove('open');
+                card.style.visibility = 'hidden';
+            }, 500);
+        });
+        
+        // Crear corazones flotantes
+        const heartsContainer = document.getElementById('heartsContainer');
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            heartsContainer.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 8000);
+        }
+        
+        // Crear notas musicales
+        function createMusicNote() {
+            const note = document.createElement('div');
+            note.classList.add('music-note');
+            note.innerHTML = '♪';
+            note.style.left = Math.random() * 100 + 'vw';
+            note.style.animationDuration = (Math.random() * 6 + 6) + 's';
+            note.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            heartsContainer.appendChild(note);
+            
+            setTimeout(() => {
+                note.remove();
+            }, 10000);
+        }
+        
+        // Crear destellos
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            heartsContainer.appendChild(sparkle);
+            
+            setTimeout(() => {
+                sparkle.remove();
+            }, 2000);
+        }
+        
+        // Crear corazones cada 300ms
+        setInterval(createHeart, 300);
+        
+        // Crear notas musicales cada 2 segundos
+        setInterval(createMusicNote, 2000);
+        
+        // Crear destellos cada 200ms
+        setInterval(createSparkle, 200);
+        
+        // Crear algunos elementos iniciales
+        for (let i = 0; i < 15; i++) {
+            setTimeout(createHeart, i * 100);
+        }
+        
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createMusicNote, i * 500);
+        }
+    </script>
+</body>
+</html>
